@@ -1,0 +1,35 @@
+model{
+	## outcome Model
+	# data level
+	for(ii in 1:N){
+	       Ynew[ii] ~ dnorm(yhat[ii],prec.y)
+	      Y[ii]~dnorm(yhat[ii],prec.y)
+	      yhat[ii] <- alphaY+schoolEffectY[school[ii]]+
+	      	       tau1*(1-M1[ii])*Z[ii]+tau2*M1[ii]*Z[ii]+lambda*M1[ii]
+	}
+
+	## school level
+	for(kk in 1:nschools){
+	      schoolEffectY[kk]~dnorm(pairEffect[pair[kk]],prec.sY)
+	}
+	## pair level
+	for(ll in 1:npairs){
+	       pairEffect[ll]~dnorm(0,prec.pY)
+	}
+	## data level
+	for(i in 1:N){
+#	      M0[i] <- 1-M1[i]
+	      M1[i] ~ dbern(pi)
+	}
+	## priors
+	tau1~dnorm(0,1/2)
+	tau2~dnorm(0,1/2)
+	lambda~dnorm(0,1/2)
+	prec.y~dgamma(0.001,0.001)
+	prec.sY~dgamma(0.001,0.001)
+	prec.pY~dgamma(0.001,0.001)
+	alphaY~dnorm(0,1/5)
+	pi~dunif(0,1)
+#	tau <- mean(M0)*tau1+mean(M1)*tau2
+	tauDiff <- tau2-tau1
+}

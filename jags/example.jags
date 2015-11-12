@@ -1,0 +1,49 @@
+model{
+	## outcome Model
+	for(ii in 1:N){
+	       Ynew[ii] ~ dnorm(yhat[ii],prec.y)
+	      Y[ii]~dnorm(yhat[ii],prec.y)
+	      yhat[ii] <- alphaY+
+	      	       tau1*M0[ii]*Z[ii]+tau2*M1[ii]*Z[ii]+lambda*M1[ii]
+	}
+
+	## data level
+	for(i in 1:N){
+	      #Mnew[i] <- ifelse(ttNew[i]>MED,1,0)
+	      M0[i] <- 1-M1[i]
+	      M1[i] <- ifelse(ttImp[i]>MED,1,0)
+	      ttImp[i] <- ifelse(obs[i],tt[i],ttNew[i])
+	      ttNew[i]~dnorm(tthat[i],prec.tt)
+	      tt[i]~dnorm(tthat[i],prec.tt)
+	      tthat[i] <- teacherEffectTT[teacher[i]]
+	}
+	## teacher level
+	for(j in 1:nteachers){
+	      teacherEffectTT[j]~dnorm(tHat[j],prec.t)
+	      tHat[j] <- schoolEffectTT[school[j]]
+	}
+	## school level
+	for(k in 1:nschools){
+	      schoolEffectTT[k]~dnorm(alpha,prec.s)
+	}
+	## priors
+
+	tau1~dnorm(0,1e-6)
+	tau2~dnorm(0,1e-6)
+	lambda~dnorm(0,1e-6)
+	prec.y~dgamma(0.001,0.001)
+	prec.tY~dgamma(0.001,0.001)
+	prec.sY~dgamma(0.001,0.001)
+	prec.pY~dgamma(0.001,0.001)
+	prec.tt~dgamma(0.001,0.001)
+	prec.t~dgamma(0.001,0.001)
+	prec.s~dgamma(0.001,0.001)
+	alphaY~dnorm(0,1e-6)
+	alpha~dnorm(0,1e-6)
+
+	var.tt <- 1/prec.y
+	var.s <- 1/prec.s
+	var.t <- 1/prec.t
+	tau <- mean(M0)*tau1+mean(M1)*tau2
+	tauDiff <- tau2-tau1
+}

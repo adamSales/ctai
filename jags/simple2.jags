@@ -1,0 +1,35 @@
+model{
+	## outcome Model
+	for( ii in 1 : N ) {
+      	     Y[ii] ~ dnorm( mu[ii] , prec.y[ii] )
+      	     mu[ii] <- muOfClust[clust[ii]]+schoolEffectY[school[ii]]
+	     prec.y[ii] <- precOfClust[clust[ii]]
+	     clust[ii] <- ifelse(Z[ii]==1,
+	     	       ifelse(M1[ii]==1,1,2),
+		       ifelse(M1[ii]==1,3,4))
+    	}
+
+	## school level
+	for(kk in 1:nschools){
+	      schoolEffectY[kk]~dnorm(pairEffect[pair[kk]],prec.sY)
+	}
+	## pair level
+	for(ll in 1:npairs){
+	       pairEffect[ll]~dnorm(0,prec.pY)
+	}
+	## data level
+	for(i in 1:N){
+	      M1[i] ~ dbern(pi)
+	}
+	## priors
+	for(m in 1:4){
+	      muOfClust[m] ~ dnorm(0,1/5)
+	}
+	for(p in 1:4){
+	      precOfClust[p] ~ dgamma(0.001,0.001)
+	}
+	prec.sY~dgamma(0.001,0.001)
+	prec.pY~dgamma(0.001,0.001)
+	pi~dunif(0,1)
+
+}

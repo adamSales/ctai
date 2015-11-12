@@ -1,0 +1,35 @@
+model{
+		## data level
+	for(i in 1:N){
+	      M1[i] <- ifelse(tt[i]>MED,1,0)
+	      ttNew[i]~dnorm(tthat[i],prec.tt)
+	      tt[i]~dnorm(tthat[i],prec.tt)
+	      tthat[i] <- Xt[i,]%*%betaHat+teacherEffectTT[teacher[i]]
+	}
+	## teacher level
+	for(j in 1:nteachers){
+	      teacherEffectTT[j]~dnorm(tHat[j],prec.t)
+	      tHat[j] <- schoolEffectTT[school[j]]
+	}
+	## school level
+	for(k in 1:nschools){
+	      schoolEffectTT[k]~dnorm(alpha,prec.s)
+	}
+	## priors
+	for(l in 1:pt){
+	      betaHat[l]~dnorm(0,1e-6)
+	}
+	for(w in 1:py){
+	      gammaHat[w]~dnorm(0,1e-6)
+	}
+
+	prec.tY~dgamma(0.001,0.001)
+	prec.sY~dgamma(0.001,0.001)
+	prec.pY~dgamma(0.001,0.001)
+	prec.tt~dgamma(0.001,0.001)
+	prec.t~dgamma(0.001,0.001)
+	prec.s~dgamma(0.001,0.001)
+	alphaY~dnorm(0,1e-6)
+	alpha~dnorm(0,1e-6)
+
+}

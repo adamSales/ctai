@@ -1,0 +1,58 @@
+model{
+	## outcome Model
+	# data level
+	for(ii in 1:N){
+	      Y[ii]~dnorm(yhat[ii],prec.y)
+	      yhat[ii] <- X[ii,]%*%gammaHat +teacherEffectY[teacher[ii]]+tau*Z[ii]+kappa*M[ii]*Z[ii]
+	}
+	#teacher level
+	for(jj in 1:nteachers){
+	      teacherEffectY[jj]~dnorm(tHatY[jj],prec.tY)
+	      tHatY[jj] <- alphaY+schoolEffectY[school[jj]]
+	}
+	## school level
+	for(kk in 1:nschools){
+	      schoolEffectY[kk]~dnorm(pairEffect[pair[kk]],prec.sY)
+	}
+	## pair level
+	for(ll in 1:npairs){
+	       pairEffect[ll]~dnorm(0,prec.pY)
+	}
+	## data level
+	for(i in 1:N){
+	      M1[i] <- ifelse(tt[i]>m1 & tt[i]>=,1,
+			ifelse(tt0)
+	      tt[i]~dnorm(tthat[i],prec.tt)
+	      tthat[i] <- X[i,]%*%betaHat+teacherEffectTT[teacher[i]]
+
+	}
+	## teacher level
+	for(j in 1:nteachers){
+	      teacherEffectTT[j]~dnorm(tHat[j],prec.t)
+	      tHat[j] <- schoolEffectTT[school[j]]
+	}
+	## school level
+	for(k in 1:nschools){
+	      schoolEffectTT[k]~dnorm(alpha,prec.s)
+	}
+	## priors
+	for(l in 1:p){
+	      betaHat[l]~dnorm(0,1e-6)
+	      gammaHat[l]~dnorm(0,1e-6)
+	}
+	tau~dnorm(0,1e-6)
+	kappa~dnorm(0,1e-6)
+	prec.y~dgamma(0.001,0.001)
+	prec.tY~dgamma(0.001,0.001)
+	prec.sY~dgamma(0.001,0.001)
+	prec.pY~dgamma(0.001,0.001)
+	prec.tt~dgamma(0.001,0.001)
+	prec.t~dgamma(0.001,0.001)
+	prec.s~dgamma(0.001,0.001)
+	alphaY~dnorm(0,1e-6)
+	alpha~dnorm(0,1e-6)
+	var.
+	var.tt <- 1/prec.y
+	var.s <- 1/prec.s
+	var.t <- 1/prec.t
+}

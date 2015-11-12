@@ -1,0 +1,98 @@
+model{
+	## outcome Model
+	# data level
+	for(ii in 1:N){
+	       Ynew[ii] ~ dnorm(yhat[ii],prec.y)
+	      Y[ii]~dnorm(yhat[ii],prec.y)
+	      yhat[ii] <- alphaY+Xy[ii,]%*%gammaHat +teacherEffectY[teacher[ii]]+
+	      	       tau11*M11[ii]*Z[ii]+
+		       tau00*M00[ii]*Z[ii]+
+		       tau10*M10[ii]*Z[ii]+
+		       tau01*M01[ii]*Z[ii]+
+		       lambda11*M11[ii]+
+		       lambda10*M10[ii]+
+		       lambda01*M01[ii]
+	}
+	#teacher level
+	for(jj in 1:nteachers){
+	      teacherEffectY[jj]~dnorm(tHatY[jj],prec.tY)
+	      tHatY[jj] <- schoolEffectY[school[jj]]
+	}
+	## school level
+	for(kk in 1:nschools){
+	      schoolEffectY[kk]~dnorm(pairEffect[pair[kk]],prec.sY)
+	}
+	## pair level
+	for(ll in 1:npairs){
+	       pairEffect[ll]~dnorm(0,prec.pY)
+	}
+	## Define Strata
+	for(i in 1:N){
+	      M11[i] <- ifelse(mas>MEDmas && try>MEDtry,1,0)
+	      M00[i] <- ifelse(mas<=MEDmas && try<=MEDtry,1,0)
+	      M10[i] <- ifelse(mas>MEDmas && try<=MEDtry,1,0)
+	      M01[i] <- ifelse(mas<=MEDmas && try>MEDtry,1,0)
+	}
+	### model for mastry
+	for(iii in 1:N){
+	      mas[iii]~dnorm(mashat[iii],prec.mas)
+	      mashat[iii] <- alphaMas+Xt[iii,]%*%betaMasHat+teacherEffectmas[teacher[iii]]
+	}
+	## teacher level
+	for(jjj in 1:nteachers){
+	      teacherEffectmas[jjj]~dnorm(tHatMas[jjj],prec.tMas)
+	      tHatMas[jjj] <- schoolEffectmas[school[jjj]]
+	}
+	## school level
+	for(kkk in 1:nschools){
+	      schoolEffectmas[kkk]~dnorm(alpha,prec.sMas)
+	}
+	### model for try
+	for(iiii in 1:N){
+	      try[iiii]~dnorm(tryhat[iii],prec.try)
+	      tryhat[iiii] <- alphaTry+Xt[iiii,]%*%betaTryHat+teacherEffecttry[teacher[iiii]]
+	}
+	## teacher level
+	for(jjjj in 1:nteachers){
+	      teacherEffecttry[jjjj]~dnorm(tHatTry[jjjj],prec.tTry)
+	      tHatTry[jjjj] <- schoolEffecttry[school[jjjj]]
+	}
+	## school level
+	for(kkkk in 1:nschools){
+	      schoolEffecttry[kkkk]~dnorm(0,prec.sTry)
+	}
+	## priors
+	for(l in 1:pt){
+	      betaMasHat[l]~dnorm(0,1e-1)
+	      betaTryHat[l]~dnorm(0,1e-1)
+	}
+	for(w in 1:py){
+	      gammaHat[w]~dnorm(0,1e-1)
+	}
+	tau11~dnorm(0,1)
+	tau00~dnorm(0,1)
+	tau10~dnorm(0,1)
+	tau01~dnorm(0,1)
+	lambda11~dnorm(0,1)
+	lambda01~dnorm(0,1)
+	lambda10~dnorm(0,1)
+	prec.y~dgamma(0.001,0.001)
+	prec.tY~dgamma(0.001,0.001)
+	prec.sY~dgamma(0.001,0.001)
+	prec.pY~dgamma(0.001,0.001)
+	prec.try~dgamma(0.001,0.001)
+	prec.tTry~dgamma(0.001,0.001)
+	prec.sTry~dgamma(0.001,0.001)
+	prec.mas~dgamma(0.001,0.001)
+	prec.tMas~dgamma(0.001,0.001)
+	prec.sMas~dgamma(0.001,0.001)
+
+	alphaY~dnorm(0,1e-6)
+	alphaMas~dnorm(0,1e-6)
+	alphaTry~dnorm(0,1e-6)
+	var.mas <- 1/prec.y
+	var.s <- 1/prec.s
+	var.t <- 1/prec.t
+	tauDiffLowHigh <- tau11-tau00
+	tauDiffMasTry <- tau10-tau01
+}

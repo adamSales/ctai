@@ -1,0 +1,51 @@
+model{
+	## outcome Model
+	# data level
+	for(ii in 1:N){
+	      Y[ii]~dnorm(yhat[ii],prec.y)
+	      yhat[ii] <- alphaY+Xy[ii,]%*%gammaHat +schoolEffectY[sschool[ii]]#+matchFE[ii,]%*%mfe
+	      	       +tau1*tt[ii]*Z[ii]+tau2*pow(tt[ii],2)*Z[ii]+tau*Z[ii]
+	      	       +lambda1*tt[ii]+lambda2*pow(tt[ii],2)
+	}
+		## school level
+	for(kk in 1:nschools){
+	      schoolEffectY[kk]~dnorm(0,prec.sY)
+	}
+	## data level
+	for(i in 1:N){
+	      tt[i]~dnorm(tthat[i],prec.tt)
+	      tthat[i] <- alpha+Xt[i,]%*%betaHat+teacherEffectTT[teacher[i]]
+	}
+	## teacher level
+	for(j in 1:nteachers){
+	      teacherEffectTT[j]~dnorm(0,prec.t)
+	      
+	}
+	## priors
+	for(m in 1:nmatch){
+	  mfe[m]~dnorm(0,1/100)
+	}
+	for(l in 1:pt){
+	      betaHat[l]~dnorm(0,1/9)
+	}
+	for(w in 1:py){
+	      gammaHat[w]~dnorm(0,1/9)
+	}
+	tau~dnorm(0,1/9)
+	tau1~dnorm(0,1/9)
+	tau2~dnorm(0,1/9)
+	lambda1~dnorm(0,1/9)
+	lambda2~dnorm(0,1/9)
+	prec.y~dgamma(0.001,0.001)
+	sd.y <- 1/sqrt(prec.y)
+	prec.sY~dgamma(0.001,0.001)
+  sd.sY <- 1/sqrt(prec.sY)
+	prec.tt~dgamma(0.001,0.001)
+  sd.tt <- 1/sqrt(prec.tt)
+	prec.t~dgamma(0.001,0.001)
+  sd.t <- 1/sqrt(prec.t)
+	alphaY~dnorm(0,1/9)
+	alpha~dnorm(0,1/9)
+
+
+}

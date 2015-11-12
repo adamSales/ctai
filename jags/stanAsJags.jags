@@ -1,0 +1,30 @@
+model{
+for (ii in 1:N) {
+  mu[ii] <- ifelse(z[ii]==1, ifelse(d[ii]==1, mu_c1,mu_nt1),
+                    ifelse(d[ii]==1, mu_c0, mu_nt0))
+  prec[ii] <- prec.y #ifelse(z[ii]==1, ifelse(d[ii]==1, prec_c1,prec_nt1),
+              #  ifelse(d[ii]==1, prec_c0, prec_nt0))
+  y[ii]~dnorm(mu[ii],prec[ii])
+}
+for (i in 1:N) {
+  odds[i] <- exp(alphat+betat*x[i])
+  pi[i] <- odds[i]/(1+odds[i])
+  d[i] ~ dbern(pi[i])
+}
+mu_c1~dnorm(0,1/4)
+mu_nt1~dnorm(0,1/4)
+mu_c0~dnorm(0,1/4)
+mu_nt0~dnorm(0,1/4)
+alphat~dnorm(0,1/4)
+betat~dnorm(0,1/4)
+
+#prec_c1 ~ dgamma(0.001, 0.001)
+#prec_c0 ~ dgamma(0.001, 0.001)
+#prec_nt1 ~ dgamma(0.001, 0.001)
+#prec_nt0 ~ dgamma(0.001, 0.001)
+prec.y~dgamma(0.001,0.001)
+
+tau_c <- mu_c1-mu_c0
+tau_nt <- mu_nt1-mu_nt0
+tauDiff <- tau_c - tau_nt
+}
