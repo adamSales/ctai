@@ -8,3 +8,5 @@ for(p in unique(ids$pair)){
 }
 
 for(sch in unique(ids$schoolid2)) print(length(unique(ids$pair[ids$schoolid2==sch])))
+
+print(1:10)
