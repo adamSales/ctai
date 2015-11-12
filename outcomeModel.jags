@@ -1,0 +1,35 @@
+## model 1 from pane et al; no covariates
+
+model{
+	## outcome Model
+	# data level
+	for(ii in 1:N){
+	      Y[ii]~dnorm(yhat[ii],prec.y)
+	      yhat[ii] <- classMeans[class[ii]]+schoolEffectY[school[ii]]
+	}
+	## classroom level
+
+	## school level
+	for(kk in 1:nschools){
+	      schoolEffectY[kk]~dnorm(sHat,prec.sY)
+	      sHat<- alpha0+alpha%*% +tau*Z[kk]
+	}
+	## priors
+	for(l in 1:33){
+	      alpha[l]~dnorm(0,1e-6)
+			}
+	tau~dnorm(0,1e-6)
+#	kappa~dnorm(0,1e-6)
+	prec.y~dgamma(0.001,0.001)
+#	prec.tY~dgamma(0.001,0.001)
+	prec.sY~dgamma(0.001,0.001)
+#	prec.pY~dgamma(0.001,0.001)
+#	prec.tt~dgamma(0.001,0.001)
+#	prec.t~dgamma(0.001,0.001)
+#	prec.s~dgamma(0.001,0.001)
+#	alphaY~dnorm(0,1e-6)
+	alpha0~dnorm(0,1e-6)
+	var.y <- 1/prec.y
+	var.s <- 1/prec.s
+#	var.t <- 1/prec.t
+}
